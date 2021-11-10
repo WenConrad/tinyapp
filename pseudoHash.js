@@ -35,6 +35,4 @@ const hashString = (input) => {
   return hashStr;
 };
 
-hashString("hello world");
-
 module.exports = { hashString };
