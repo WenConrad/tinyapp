@@ -7,8 +7,8 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.set("view engine", "ejs");
 
 const urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
+  "v69tDP": "http://www.lighthouselabs.ca",
+  "i4xyhU": "http://www.google.com"
 };
 
 const { hashString } = require("./pseudoHash");
