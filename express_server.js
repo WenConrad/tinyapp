@@ -11,6 +11,8 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
+const pseudoHash = require("./pseudoHash");
+
 app.get("/", (req, res) => {
   res.send("Hello!");
 });
