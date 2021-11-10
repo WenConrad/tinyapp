@@ -13,12 +13,10 @@ const hashString = (input) => {
     hashChars.ch3 += (i % 3) ? 1 : n * n;
   }
 
-  hashChars.ch4 = (hashChars.ch1 % 10000) / 10000;
-  hashChars.ch5 = (hashChars.ch2 % 10000) / 10000;
-  hashChars.ch6 = (hashChars.ch3 % 10000) / 10000;
-  hashChars.ch1 = (hashChars.ch1 % 1000) / 1000;
-  hashChars.ch2 = (hashChars.ch2 % 1000) / 1000;
-  hashChars.ch3 = (hashChars.ch3 % 1000) / 1000;
+  for (let i in hashChars) {
+    hashChars[i + 'b'] = (hashChars[i] % 100000) / 100000;
+    hashChars[i] = (hashChars[i] % 1000) / 1000;
+  }
 
   const toAlphaNum = (num) => {
     if (num < 10) {
@@ -36,5 +34,7 @@ const hashString = (input) => {
 
   return hashStr;
 };
+
+hashString("hello world");
 
 module.exports = { hashString };
