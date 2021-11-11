@@ -16,6 +16,14 @@ const urlDatabase = {
   "i4xyhU": "https://www.google.com"
 };
 
+const users = {
+  "userID1": {
+    id: "userID1",
+    email: "useremail@email.com",
+    password: "userpass",
+  }
+};
+
 const templateVars = {
   username: null,
 };
@@ -76,6 +84,11 @@ app.get("/register", (req, res) => {
 })
 
 app.post("/register", (req, res) => {
+  users.newuser = {
+    userID: "newuserid",
+    email: "useremail@example.com",
+    password: "hunter2",
+  }
   res.render("login_register", templateVars);
 })
 
