@@ -90,7 +90,7 @@ app.post("/register", (req, res) => {
     email: req.body.email,
     password: hashString(req.body.password),
   }
-  console.log(users);
+  res.cookie("userID", newuser);
   res.render("login_register", templateVars);
 })
 
