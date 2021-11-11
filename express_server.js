@@ -21,6 +21,11 @@ const users = {
     id: "userID1",
     email: "useremail@email.com",
     password: "userpass",
+  },
+  "twTy6d": {
+    id: "twTy6d",
+    email: "conradwen@gmail.com",
+    password: "kcmkMG",
   }
 };
 
@@ -28,6 +33,13 @@ const templateVars = {
   users,
   session: null,
 };
+
+const readCookie = (req) => {
+  let cooke = req.cookies;
+  if (cooke.session) {
+    templateVars.session = cooke.session;
+  }
+}
 
 app.get("/", (req, res) => {
   res.send("Hello!");
@@ -42,11 +54,13 @@ app.get("/hello", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
+  readCookie(req);
   templateVars.urls = urlDatabase;
   res.render("urls_index", templateVars);
 });
 
 app.get("/urls/new", (req, res) => {
+  readCookie(req);
   res.render("urls_new", templateVars);
 });
 
@@ -91,6 +105,7 @@ app.post("/register", (req, res) => {
     email: req.body.email,
     password: hashString(req.body.password),
   }
+  console.log(users[newuser]);
   templateVars.session = newuser
   res.cookie("session", newuser);
   res.render("login_register", templateVars);
@@ -106,7 +121,7 @@ app.post("/login", (req, res) => {
 
 app.post("/logout", (req, res) => {
   res.clearCookie('session');
-  templateVars.user = null;
+  templateVars.session = null;
   res.redirect("/urls");
 });
 
