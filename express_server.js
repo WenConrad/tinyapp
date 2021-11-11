@@ -71,6 +71,14 @@ app.get("/u/:shortURL", (req, res) => {
   res.redirect(longURL);
 });
 
+app.get("/register", (req, res) => {
+  res.render("login_register", templateVars);
+})
+
+app.post("/register", (req, res) => {
+  res.render("login_register", templateVars);
+})
+
 app.post("/login", (req, res) => {
   templateVars.username = req.body.username;
   res.cookie("username", req.body.username);
