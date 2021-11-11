@@ -84,11 +84,13 @@ app.get("/register", (req, res) => {
 })
 
 app.post("/register", (req, res) => {
-  users.newuser = {
-    userID: "newuserid",
-    email: "useremail@example.com",
-    password: "hunter2",
+  let newuser = hashString(req.body.email)
+  users[newuser] = {
+    userID: newuser,
+    email: req.body.email,
+    password: hashString(req.body.password),
   }
+  console.log(users);
   res.render("login_register", templateVars);
 })
 
