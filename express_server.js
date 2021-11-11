@@ -25,7 +25,8 @@ const users = {
 };
 
 const templateVars = {
-  username: null,
+  users,
+  session: null,
 };
 
 app.get("/", (req, res) => {
@@ -90,19 +91,22 @@ app.post("/register", (req, res) => {
     email: req.body.email,
     password: hashString(req.body.password),
   }
-  res.cookie("userID", newuser);
+  templateVars.session = newuser
+  res.cookie("session", newuser);
   res.render("login_register", templateVars);
 })
 
 app.post("/login", (req, res) => {
-  templateVars.username = req.body.username;
-  res.cookie("username", req.body.username);
+  let userids = hashString(req.body.email)
+  templateVars.session = userids;
+  templateVars.users[userids] = users;
+  res.cookie("session", userids);
   res.render("urls_index", templateVars);
 });
 
 app.post("/logout", (req, res) => {
-  res.clearCookie('username');
-  templateVars.username = null;
+  res.clearCookie('session');
+  templateVars.user = null;
   res.redirect("/urls");
 });
 
