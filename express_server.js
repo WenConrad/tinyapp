@@ -38,7 +38,7 @@ app.get("/urls", (req, res) => {
 });
 
 app.get("/urls/new", (req, res) => {
-  res.render("urls_new");
+  res.render("urls_new", templateVars);
 });
 
 app.post("/urls", (req, res) => {
@@ -72,7 +72,7 @@ app.get("/u/:shortURL", (req, res) => {
 });
 
 app.post("/login", (req, res) => {
-  templateVars.username = req.cookies["username"];
+  templateVars.username = req.body.username;
   res.cookie("username", req.body.username);
   res.render("urls_index", templateVars);
 });
