@@ -41,6 +41,22 @@ const readCookie = (req) => {
   }
 }
 
+const checkUserAndPass = (req) => {
+  const credentials = {
+    userID: hashString(req.body.email),
+    password: hashString(req.body.password),
+    userExists: false,
+    passMatch: false,
+  }
+  if (users[credentials.userID]) {
+    credentials.userExists = true;
+    if (credentials.password === users[credentials.userID].password) {
+      credentials.passMatch = true;
+    }
+  }
+  return credentials;
+};
+
 app.get("/", (req, res) => {
   res.send("Hello!");
 });
@@ -99,24 +115,32 @@ app.get("/register", (req, res) => {
 })
 
 app.post("/register", (req, res) => {
-  let newuser = hashString(req.body.email)
-  users[newuser] = {
-    userID: newuser,
-    email: req.body.email,
-    password: hashString(req.body.password),
+  credentials = checkUserAndPass(req);
+  if (credentials.userExists) {
+    res.status(409);
+    return res.send("email is already registered");
   }
-  console.log(users[newuser]);
-  templateVars.session = newuser
-  res.cookie("session", newuser);
+  users[credentials.userID] = {
+    userID: credentials.userID,
+    email: req.body.email,
+    password: credentials.password,
+  }
+  res.cookie("session", credentials.userID);
   res.render("login_register", templateVars);
 })
 
 app.post("/login", (req, res) => {
-  let userids = hashString(req.body.email)
-  templateVars.session = userids;
-  templateVars.users[userids] = users;
-  res.cookie("session", userids);
-  res.render("urls_index", templateVars);
+  credentials = checkUserAndPass(req);
+  if (credentials.passMatch) {
+    res.cookie("session", credentials.userID);
+    return res.redirect("/urls");
+  }
+  if (credentials.userExists) {
+    res.status(401);
+    return res.send("Wrong password bruh");
+  }
+  res.status(401);
+  res.send("email not registered")
 });
 
 app.post("/logout", (req, res) => {
