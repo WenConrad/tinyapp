@@ -5,6 +5,7 @@ const cookieParser = require('cookie-parser');
 const bodyParser = require("body-parser");
 const morgan = require("morgan");
 const { hashString } = require("./pseudoHash");
+const bcrypt = require('bcryptjs');
 
 app.set("view engine", "ejs");
 app.use(cookieParser());
