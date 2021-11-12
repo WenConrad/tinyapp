@@ -67,10 +67,6 @@ app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
 
-app.get("/hello", (req, res) => {
-  res.send("<html><body>Hello <b>World</b></body></html>\n");
-});
-
 app.get("/urls", (req, res) => {
   readCookie(req);
   templateVars.urls = urlDatabase;
@@ -78,12 +74,16 @@ app.get("/urls", (req, res) => {
 });
 
 app.get("/urls/new", (req, res) => {
-  readCookie(req);
-  res.render("urls_new", templateVars);
+  if (readCookie(req)) {
+    return res.render("urls_new", templateVars);
+  }
+  res.redirect("/register");
 });
 
 app.post("/urls", (req, res) => {
-  console.log(req.body);
+  if (!readCookie(req)) {
+    return res.redirect("register");
+  }
   let shortURL = hashString(req.body.longURL); //should we check if longURL is a valid URL? maybe implement this later
   urlDatabase[shortURL] = req.body.longURL;
   res.redirect(`/urls/${shortURL}`);
