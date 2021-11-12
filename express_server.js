@@ -11,29 +11,7 @@ app.use(cookieParser());
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(morgan("dev"));
 
-const urlDatabase = {
-  "v69tDP": {
-    fullURL: "https://www.lighthouselabs.ca",
-    userID: "twTy6d",
-  },
-  "i4xyhU": {
-    fullURL: "https://www.google.com",
-    userID: "twTy6d",
-  }
-};
-
-const users = {
-  "userID1": {
-    id: "userID1",
-    email: "useremail@email.com",
-    password: "userpass",
-  },
-  "twTy6d": {
-    id: "twTy6d",
-    email: "conradwen@gmail.com",
-    password: "kcmkMG",
-  }
-};
+const { urlDatabase, users } = require('./server-data/database.js')
 
 const templateVars = {
   users,
@@ -41,10 +19,10 @@ const templateVars = {
 };
 
 const readCookie = (req) => {
-  let cooke = req.cookies;
-  if (cooke.session) {
-    templateVars.session = cooke.session;
-    return true;
+  let cookie = req.cookies;
+  if (cookie.session) {
+    templateVars.session = cookie.session;
+    return cookie.session;
   }
   return false;
 }
@@ -106,12 +84,18 @@ app.post("/urls", (req, res) => {
 });
 
 app.get("/urls/:shortURL", (req, res) => {
+  if (urlDatabase[req.params.shortURL].userID !== req.cookies.session) {
+    return res.render("login_register", templateVars);
+  }
   templateVars.shortURL = req.params.shortURL;
   templateVars.longURL = urlDatabase[req.params.shortURL].fullURL;
   res.render("urls_show", templateVars);
 });
 
 app.post("/urls/:shortURL/edit", (req, res) => {
+  if (urlDatabase[req.params.shortURL].userID !== req.cookies.session) {
+    return res.render("login_register", templateVars);
+  }
   delete urlDatabase[req.params.shortURL];
   let shortURLNew = hashString(req.body.update);
   urlDatabase[shortURLNew] = {
@@ -122,6 +106,9 @@ app.post("/urls/:shortURL/edit", (req, res) => {
 })
 
 app.post("/urls/:shortURL/delete", (req, res) => {
+  if (urlDatabase[req.params.shortURL].userID !== req.cookies.session) {
+    return res.render("login_register", templateVars);
+  }
   delete urlDatabase[req.params.shortURL];
   res.redirect("/urls");
 });
