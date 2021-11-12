@@ -38,7 +38,9 @@ const readCookie = (req) => {
   let cooke = req.cookies;
   if (cooke.session) {
     templateVars.session = cooke.session;
+    return true;
   }
+  return false;
 }
 
 const checkUserAndPass = (req) => {
@@ -111,6 +113,9 @@ app.get("/u/:shortURL", (req, res) => {
 });
 
 app.get("/register", (req, res) => {
+  if (readCookie(req)) {
+    return res.redirect("/urls");
+  }
   res.render("login_register", templateVars);
 })
 
