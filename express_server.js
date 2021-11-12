@@ -1,14 +1,18 @@
 const express = require("express");
 const app = express();
 const PORT = 8080;
-const cookieParser = require('cookie-parser');
+const cookieSession = require('cookie-session');
 const bodyParser = require("body-parser");
 const morgan = require("morgan");
 const { hashString } = require("./pseudoHash");
 const bcrypt = require('bcryptjs');
 
 app.set("view engine", "ejs");
-app.use(cookieParser());
+app.use(cookieSession({
+  name: 'session',
+  keys: ['key1', 'key2', 'key3'],
+  maxAge: 60 * 60 * 1000,
+}));
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(morgan("dev"));
 
@@ -18,15 +22,6 @@ const templateVars = {
   users,
   session: null,
 };
-
-const readCookie = (req) => {
-  let cookie = req.cookies;
-  if (cookie.session) {
-    templateVars.session = cookie.session;
-    return cookie.session;
-  }
-  return false;
-}
 
 const checkUserAndPass = (req) => {
   const credentials = {
@@ -51,7 +46,7 @@ app.get("/urls.json", (req, res) => {
 
 app.get("/urls", (req, res) => {
   templateVars.urls = {};
-  if (!readCookie(req)) {
+  if (!req.session.user_id) {
     return res.render("urls_index", templateVars);
   }
   for (let i in urlDatabase) {
@@ -63,14 +58,14 @@ app.get("/urls", (req, res) => {
 });
 
 app.get("/urls/new", (req, res) => {
-  if (readCookie(req)) {
+  if (req.session.user_id) {
     return res.render("urls_new", templateVars);
   }
   res.redirect("/register");
 });
 
 app.post("/urls", (req, res) => {
-  if (!readCookie(req)) {
+  if (!req.session.user_id) {
     return res.redirect("register");
   }
   let shortURL = hashString(req.body.longURL); //should we check if longURL is a valid URL? maybe implement this later
@@ -82,7 +77,7 @@ app.post("/urls", (req, res) => {
 });
 
 app.get("/urls/:shortURL", (req, res) => {
-  if (urlDatabase[req.params.shortURL].userID !== req.cookies.session) {
+  if (urlDatabase[req.params.shortURL].userID !== req.session.user_id) {
     return res.render("login_register", templateVars);
   }
   templateVars.shortURL = req.params.shortURL;
@@ -91,7 +86,7 @@ app.get("/urls/:shortURL", (req, res) => {
 });
 
 app.post("/urls/:shortURL/edit", (req, res) => {
-  if (urlDatabase[req.params.shortURL].userID !== req.cookies.session) {
+  if (urlDatabase[req.params.shortURL].userID !== req.session.user_id) {
     return res.render("login_register", templateVars);
   }
   delete urlDatabase[req.params.shortURL];
@@ -104,7 +99,7 @@ app.post("/urls/:shortURL/edit", (req, res) => {
 })
 
 app.post("/urls/:shortURL/delete", (req, res) => {
-  if (urlDatabase[req.params.shortURL].userID !== req.cookies.session) {
+  if (urlDatabase[req.params.shortURL].userID !== req.session.user_id) {
     return res.render("login_register", templateVars);
   }
   delete urlDatabase[req.params.shortURL];
@@ -117,7 +112,7 @@ app.get("/u/:shortURL", (req, res) => {
 });
 
 app.get("/register", (req, res) => {
-  if (readCookie(req)) {
+  if (req.session.user_id) {
     return res.redirect("/urls");
   }
   res.render("login_register", templateVars);
@@ -134,14 +129,16 @@ app.post("/register", (req, res) => {
     email: req.body.email,
     password: bcrypt.hashSync(req.body.password, 10),
   }
-  res.cookie("session", credentials.userID);
+  req.session.user_id = credentials.userID;
+  templateVars.session = credentials.userID;
   res.render("login_register", templateVars);
 })
 
 app.post("/login", (req, res) => {
   credentials = checkUserAndPass(req);
   if (credentials.passMatch) {
-    res.cookie("session", credentials.userID);
+    req.session.user_id = credentials.userID;
+    templateVars.session = credentials.userID;
     return res.redirect("/urls");
   }
   if (credentials.userExists) {
@@ -153,7 +150,7 @@ app.post("/login", (req, res) => {
 });
 
 app.post("/logout", (req, res) => {
-  res.clearCookie('session');
+  req.session = null;
   templateVars.session = null;
   res.redirect("/register");
 });
