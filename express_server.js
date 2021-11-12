@@ -12,8 +12,14 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use(morgan("dev"));
 
 const urlDatabase = {
-  "v69tDP": "https://www.lighthouselabs.ca",
-  "i4xyhU": "https://www.google.com"
+  "v69tDP": {
+    fullURL: "https://www.lighthouselabs.ca",
+    userID: "twTy6d",
+  },
+  "i4xyhU": {
+    fullURL: "https://www.google.com",
+    userID: "twTy6d",
+  }
 };
 
 const users = {
@@ -85,20 +91,26 @@ app.post("/urls", (req, res) => {
     return res.redirect("register");
   }
   let shortURL = hashString(req.body.longURL); //should we check if longURL is a valid URL? maybe implement this later
-  urlDatabase[shortURL] = req.body.longURL;
+  urlDatabase[shortURL] = {
+    fullURL: req.body.longURL,
+    userID: templateVars[session],
+  }
   res.redirect(`/urls/${shortURL}`);
 });
 
 app.get("/urls/:shortURL", (req, res) => {
   templateVars.shortURL = req.params.shortURL;
-  templateVars.longURL = urlDatabase[req.params.shortURL];
+  templateVars.longURL = urlDatabase[req.params.shortURL].fullURL;
   res.render("urls_show", templateVars);
 });
 
 app.post("/urls/:shortURL/edit", (req, res) => {
   delete urlDatabase[req.params.shortURL];
   let shortURLNew = hashString(req.body.update);
-  urlDatabase[shortURLNew] = req.body.update;
+  urlDatabase[shortURLNew] = {
+    fullURL: req.body.update,
+    userID: templateVars[session],
+  }
   res.redirect(`/urls/${shortURLNew}`);
 })
 
@@ -108,7 +120,7 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 });
 
 app.get("/u/:shortURL", (req, res) => {
-  const longURL = urlDatabase[req.params.shortURL];
+  const longURL = urlDatabase[req.params.shortURL].fullURL;
   res.redirect(longURL);
 });
 
