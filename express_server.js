@@ -31,15 +31,12 @@ const readCookie = (req) => {
 const checkUserAndPass = (req) => {
   const credentials = {
     userID: hashString(req.body.email),
-    password: hashString(req.body.password),
     userExists: false,
     passMatch: false,
   }
   if (users[credentials.userID]) {
     credentials.userExists = true;
-    if (credentials.password === users[credentials.userID].password) {
-      credentials.passMatch = true;
-    }
+    credentials.passMatch = bcrypt.compareSync(req.body.password, users[credentials.userID].password);
   }
   return credentials;
 };
@@ -135,7 +132,7 @@ app.post("/register", (req, res) => {
   users[credentials.userID] = {
     userID: credentials.userID,
     email: req.body.email,
-    password: credentials.password,
+    password: bcrypt.hashSync(req.body.password, 10),
   }
   res.cookie("session", credentials.userID);
   res.render("login_register", templateVars);
@@ -149,7 +146,7 @@ app.post("/login", (req, res) => {
   }
   if (credentials.userExists) {
     res.status(401);
-    return res.send("Wrong password bruh");
+    return res.send(bcrypt.hashSync("hunter2", 10));
   }
   res.status(401);
   res.send("email not registered")

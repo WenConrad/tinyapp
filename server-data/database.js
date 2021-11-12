@@ -18,7 +18,7 @@ const users = {
   "twTy6d": {
     id: "twTy6d",
     email: "conradwen@gmail.com",
-    password: "kcmkMG",
+    password: "$2a$10$1bNySHwNwvFhJSN64v0kveXsAdf.IgwAOrdlhsY8.igV./HVdc.im",
   }
 };
 
