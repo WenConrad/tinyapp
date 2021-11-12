@@ -74,8 +74,15 @@ app.get("/urls.json", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
-  readCookie(req);
-  templateVars.urls = urlDatabase;
+  templateVars.urls = {};
+  if (!readCookie(req)) {
+    return res.render("urls_index", templateVars);
+  }
+  for (let i in urlDatabase) {
+    if (urlDatabase[i].userID === templateVars.session) {
+      templateVars.urls[i] = urlDatabase[i];
+    }
+  }
   res.render("urls_index", templateVars);
 });
 
@@ -163,7 +170,7 @@ app.post("/login", (req, res) => {
 app.post("/logout", (req, res) => {
   res.clearCookie('session');
   templateVars.session = null;
-  res.redirect("/urls");
+  res.redirect("/register");
 });
 
 app.listen(PORT, () => {
