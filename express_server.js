@@ -17,7 +17,7 @@ app.use(express.urlencoded({extended: true}));
 app.use(morgan("dev"));
 
 const { urlDatabase, users } = require('./server-data/database.js');
-const { userDatabase, checkCookie } = require("./helpers");
+const { userDatabase, checkCookie, saveToDataBase } = require("./helpers");
 
 const checkUserAndPass = (req) => {
   const credentials = {
@@ -48,6 +48,7 @@ app.get("/urls", (req, res) => {
 
 app.get("/urls/new", (req, res) => {
   if (req.session.user_id) {
+    let templateVars = checkCookie(req.session.user_id);
     return res.render("urls_new", templateVars);
   }
   res.redirect("/register");
@@ -60,12 +61,15 @@ app.post("/urls", (req, res) => {
   let shortURL = hashString(req.body.longURL); //should we check if longURL is a valid URL? maybe implement this later
   urlDatabase[shortURL] = {
     fullURL: req.body.longURL,
-    userID: templateVars[session],
+    userID: req.session.user_id,
   }
+  saveToDataBase();
   res.redirect(`/urls/${shortURL}`);
 });
 
 app.get("/urls/:shortURL", (req, res) => {
+  let templateVars = checkCookie(req.session.user_id);
+  templateVars.urls = userDatabase(req.session.user_id);
   if (urlDatabase[req.params.shortURL].userID !== req.session.user_id) {
     return res.render("login_register", templateVars);
   }
@@ -84,6 +88,7 @@ app.post("/urls/:shortURL/edit", (req, res) => {
     fullURL: req.body.update,
     userID: templateVars[session],
   }
+  saveToDataBase();
   res.redirect(`/urls/${shortURLNew}`);
 })
 
@@ -92,6 +97,7 @@ app.post("/urls/:shortURL/delete", (req, res) => {
     return res.render("login_register", templateVars);
   }
   delete urlDatabase[req.params.shortURL];
+  saveToDataBase();
   res.redirect("/urls");
 });
 
@@ -104,11 +110,13 @@ app.get("/register", (req, res) => {
   if (req.session.user_id) {
     return res.redirect("/urls");
   }
-  let templateVars = {session: null};
+  let templateVars = checkCookie(req.session.user_id);
   res.render("login_register", templateVars);
 })
 
 app.post("/register", (req, res) => {
+  let templateVars = checkCookie(req.session.user_id);
+  templateVars.urls = userDatabase(req.session.user_id);
   credentials = checkUserAndPass(req);
   if (credentials.userExists) {
     res.status(409);
@@ -120,15 +128,14 @@ app.post("/register", (req, res) => {
     password: bcrypt.hashSync(req.body.password, 10),
   }
   req.session.user_id = credentials.userID;
-  templateVars.session = credentials.userID;
-  res.render("login_register", templateVars);
+  saveToDataBase();
+  res.redirect("/urls");
 })
 
 app.post("/login", (req, res) => {
   credentials = checkUserAndPass(req);
   if (credentials.passMatch) {
     req.session.user_id = credentials.userID;
-    templateVars = {session: credentials.userID, users};
     return res.redirect("/urls");
   }
   if (credentials.userExists) {
@@ -141,7 +148,6 @@ app.post("/login", (req, res) => {
 
 app.post("/logout", (req, res) => {
   req.session = null;
-  templateVars.session = null;
   res.redirect("/register");
 });
 
