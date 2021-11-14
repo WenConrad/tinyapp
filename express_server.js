@@ -33,7 +33,10 @@ const checkUserAndPass = (req) => {
 };
 
 app.get("/", (req, res) => {
-  res.send("Hello!");
+  if (req.session.user_id) {
+    return res.redirect("/urls");
+  }
+  res.redirect("/register");
 });
 
 app.get("/urls.json", (req, res) => {
