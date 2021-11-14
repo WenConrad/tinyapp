@@ -2,7 +2,6 @@ const express = require("express");
 const app = express();
 const PORT = 8080;
 const cookieSession = require('cookie-session');
-const bodyParser = require("body-parser");
 const morgan = require("morgan");
 const { hashString } = require("./pseudoHash");
 const bcrypt = require('bcryptjs');
@@ -13,7 +12,8 @@ app.use(cookieSession({
   keys: ['key1', 'key2', 'key3'],
   maxAge: 60 * 60 * 1000,
 }));
-app.use(bodyParser.urlencoded({extended: true}));
+
+app.use(express.urlencoded({extended: true}));
 app.use(morgan("dev"));
 
 const { urlDatabase, users } = require('./server-data/database.js')
