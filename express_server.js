@@ -111,6 +111,7 @@ app.get("/register", (req, res) => {
     return res.redirect("/urls");
   }
   let templateVars = checkCookie(req.session.user_id);
+  templateVars.notice = null;
   res.render("login_register", templateVars);
 })
 
@@ -119,8 +120,8 @@ app.post("/register", (req, res) => {
   templateVars.urls = userDatabase(req.session.user_id);
   credentials = checkUserAndPass(req);
   if (credentials.userExists) {
-    res.status(409);
-    return res.send("email is already registered");
+    templateVars.notice = `${req.body.email} is already registered.`
+    return res.render("login_register", templateVars)
   }
   users[credentials.userID] = {
     userID: credentials.userID,
@@ -133,17 +134,17 @@ app.post("/register", (req, res) => {
 })
 
 app.post("/login", (req, res) => {
+  let templateVars = { session: null };
   credentials = checkUserAndPass(req);
   if (credentials.passMatch) {
     req.session.user_id = credentials.userID;
     return res.redirect("/urls");
   }
+  templateVars.notice = `${req.body.email} is not a registered user.`
   if (credentials.userExists) {
-    res.status(401);
-    return res.send(bcrypt.hashSync("hunter2", 10));
+    templateVars.notice = "Login Failed: Password Incorrect"
   }
-  res.status(401);
-  res.send("email not registered")
+  return res.render("login_register", templateVars)
 });
 
 app.post("/logout", (req, res) => {
