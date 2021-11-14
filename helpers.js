@@ -7,6 +7,16 @@ const getUserByEmail = function(email, database) {
   return database[hashString(email)];
 };
 
+const checkCookie = (cookie) => {
+  if(users[cookie]) {
+    return {
+      email: users[cookie].email,
+      session: cookie,
+    }
+  }
+  return {session: null};
+};
+
 const userDatabase = (userID) => {
   let databaseUser = {};
   for (let i in urlDatabase) {
@@ -24,4 +34,4 @@ const saveToDataBase = () => {
   });
 };
 
-module.exports = { getUserByEmail, userDatabase, saveToDataBase };
+module.exports = { getUserByEmail, checkCookie, userDatabase, saveToDataBase };

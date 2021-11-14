@@ -16,12 +16,8 @@ app.use(cookieSession({
 app.use(express.urlencoded({extended: true}));
 app.use(morgan("dev"));
 
-const { urlDatabase, users } = require('./server-data/database.js')
-
-const templateVars = {
-  users,
-  session: null,
-};
+const { urlDatabase, users } = require('./server-data/database.js');
+const { userDatabase, checkCookie } = require("./helpers");
 
 const checkUserAndPass = (req) => {
   const credentials = {
@@ -45,15 +41,8 @@ app.get("/urls.json", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
-  templateVars.urls = {};
-  if (!req.session.user_id) {
-    return res.render("urls_index", templateVars);
-  }
-  for (let i in urlDatabase) {
-    if (urlDatabase[i].userID === templateVars.session) {
-      templateVars.urls[i] = urlDatabase[i];
-    }
-  }
+  let templateVars = checkCookie(req.session.user_id);
+  templateVars.urls = userDatabase(req.session.user_id);
   res.render("urls_index", templateVars);
 });
 
@@ -115,6 +104,7 @@ app.get("/register", (req, res) => {
   if (req.session.user_id) {
     return res.redirect("/urls");
   }
+  let templateVars = {session: null};
   res.render("login_register", templateVars);
 })
 
@@ -138,7 +128,7 @@ app.post("/login", (req, res) => {
   credentials = checkUserAndPass(req);
   if (credentials.passMatch) {
     req.session.user_id = credentials.userID;
-    templateVars.session = credentials.userID;
+    templateVars = {session: credentials.userID, users};
     return res.redirect("/urls");
   }
   if (credentials.userExists) {
