@@ -2,19 +2,17 @@ const { hashString } = require("./pseudoHash");
 const fs = require('fs');
 const inspect = require('util').inspect;
 const { urlDatabase, users } = require('./server-data/database.js');
-
-const getUserByEmail = function(email, database) {
-  return database[hashString(email)];
-};
+const bcrypt = require('bcryptjs');
 
 const checkCookie = (cookie) => {
   if(users[cookie]) {
     return {
       email: users[cookie].email,
       session: cookie,
+      notice: null,
     }
   }
-  return {session: null};
+  return {session: null, notice: null };
 };
 
 const userDatabase = (userID) => {
@@ -27,6 +25,19 @@ const userDatabase = (userID) => {
   return databaseUser;
 }
 
+const checkUserAndPass = (req) => {
+  const credentials = {
+    userID: hashString(req.body.email),
+    userExists: false,
+    passMatch: false,
+  }
+  if (users[credentials.userID]) {
+    credentials.userExists = true;
+    credentials.passMatch = bcrypt.compareSync(req.body.password, users[credentials.userID].password);
+  }
+  return credentials;
+};
+
 const saveToDataBase = () => {
   fs.writeFile('./server-data/database.js', `const urlDatabase = ${inspect(urlDatabase)};\nconst users = ${inspect(users)};\nmodule.exports = { urlDatabase, users };`, (err) => {
     if (err) throw err;
@@ -34,4 +45,4 @@ const saveToDataBase = () => {
   });
 };
 
-module.exports = { getUserByEmail, checkCookie, userDatabase, saveToDataBase };
+module.exports = { checkCookie, userDatabase, checkUserAndPass, saveToDataBase };
