@@ -50,7 +50,10 @@ app.get("/urls/new", (req, res) => {
 app.get("/urls/:shortURL", (req, res) => {
   let templateVars = checkCookie(req.session.userID);
   templateVars.urls = userURLs(req.session.userID);
-  if (!req.session.userID) {
+  if (!urlDatabase[req.params.shortURL]) {
+    res.status(404);
+    return res.send("Error 404: shortURL does not exist.");
+  } else if (!req.session.userID) {
     templateVars.notice = "Please Log in to view your TinyApp URLs.";
     templateVars.page = 'login';
     return res.render("login_register", templateVars);
@@ -66,7 +69,7 @@ app.get("/urls/:shortURL", (req, res) => {
 app.get("/u/:shortURL", (req, res) => {
   if (!urlDatabase[req.params.shortURL]) {
     res.status(404);
-    res.send("Error 404: URL does not exist.");
+    res.send("Error 404: shortURL does not exist.");
   }
   const longURL = urlDatabase[req.params.shortURL].fullURL;
   res.redirect(longURL);
