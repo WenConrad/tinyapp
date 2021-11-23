@@ -15,7 +15,7 @@ const checkCookie = (cookie) => {
   return {session: null, notice: null };
 };
 
-const userDatabase = (userID) => {
+const userURLs = (userID) => {
   let databaseUser = {};
   for (const i in urlDatabase) {
     if (urlDatabase[i].userID === userID) {

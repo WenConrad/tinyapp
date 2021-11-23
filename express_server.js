@@ -17,7 +17,7 @@ app.use(express.urlencoded({extended: true}));
 app.use(morgan("dev"));
 
 const { urlDatabase, users } = require('./server-data/database.js');
-const { userDatabase, checkCookie, checkUserAndPass, saveToDataBase } = require("./helpers");
+const { userURLs, checkCookie, checkUserAndPass, saveToDataBase } = require("./helpers");
 
 app.get("/", (req, res) => {
   if (req.session.userID) {
@@ -28,7 +28,7 @@ app.get("/", (req, res) => {
 
 app.get("/urls", (req, res) => {
   let templateVars = checkCookie(req.session.userID);
-  templateVars.urls = userDatabase(req.session.userID);
+  templateVars.urls = userURLs(req.session.userID);
   if (!req.session.userID) {
     templateVars.notice = "Please Log in to view your TinyApp URLs.";
     templateVars.page = 'login';
@@ -49,7 +49,7 @@ app.get("/urls/new", (req, res) => {
 
 app.get("/urls/:shortURL", (req, res) => {
   let templateVars = checkCookie(req.session.userID);
-  templateVars.urls = userDatabase(req.session.userID);
+  templateVars.urls = userURLs(req.session.userID);
   if (!req.session.userID) {
     templateVars.notice = "Please Log in to view your TinyApp URLs.";
     templateVars.page = 'login';
@@ -90,7 +90,7 @@ app.post("/urls", (req, res) => {
 
 app.post("/urls/:shortURL/edit", (req, res) => {
   let templateVars = checkCookie(req.session.userID);
-  templateVars.urls = userDatabase(req.session.userID);
+  templateVars.urls = userURLs(req.session.userID);
   if (!req.session.userID) {
     templateVars.notice = "Please log in to view and edit your TinyApp URLs.";
     templateVars.page = 'login';
@@ -112,7 +112,7 @@ app.post("/urls/:shortURL/edit", (req, res) => {
 
 app.post("/urls/:shortURL/delete", (req, res) => {
   let templateVars = checkCookie(req.session.userID);
-  templateVars.urls = userDatabase(req.session.userID);
+  templateVars.urls = userURLs(req.session.userID);
   if (!req.session.userID) {
     templateVars.notice = "Please log in to view and edit your TinyApp URLs.";
     templateVars.page = 'login';
