@@ -4,10 +4,13 @@ TinyApp is a full stack web application built with Node and Express that allows 
 
 ## Final Product
 
+### \[NEW-v1.1\] Login Page
 !["[NEW-v1.1] Screenshot of login page"](https://github.com/WenConrad/tinyapp/blob/master/docs/login-page-v-1.1.png?raw=true)
 
+### User URLs Page
 !["Screenshot of URLs page"](https://github.com/WenConrad/tinyapp/blob/master/docs/urls-page.png?raw=true)
 
+### \[OLD-v1.0\] Login/Registration Page with Error Alert
 !["[OLD-v1.0] Screenshot of login and registration page showing an error message"](https://github.com/WenConrad/tinyapp/blob/master/docs/login-page-error-v-1%5Bold%5D.png?raw=true)
 
 ## Dependencies
