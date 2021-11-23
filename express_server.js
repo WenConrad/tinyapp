@@ -23,7 +23,7 @@ app.get("/", (req, res) => {
   if (req.session.userID) {
     return res.redirect("/urls");
   }
-  res.redirect("/register");
+  res.redirect("/login");
 });
 
 app.get("/urls", (req, res) => {
@@ -191,7 +191,7 @@ app.post("/register", (req, res) => {
 
 app.post("/logout", (req, res) => {
   req.session = null;
-  res.redirect("/register");
+  res.redirect("/urls");
 });
 
 app.listen(PORT, () => {
