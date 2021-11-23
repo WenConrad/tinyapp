@@ -15,7 +15,13 @@
     <%- include('partials/_header') %>
 
     <main style="margin: 1em;">
-      <h3>Login / Register</h3>
+      <h3>
+        <% if (page === 'login') { %>
+          Login
+        <% } else { %>
+          Register
+        <% } %>
+      </h3>
       <form class="form" action="/Login" method="POST">
         <div class="form-group mb-2">
           <label for="email">Email Address</label>
@@ -25,8 +31,11 @@
           <label for="password">Password</label>
           <input class="form-control" type="password" name="password" placeholder="Password" style="width: 300px">
         </div>
+        <% if (page === 'login') { %>
         <button type="submit" class="btn btn-primary">Login</button>
+        <% } else { %>
         <button type="submit" formaction="/register" class="btn btn-secondary">Register</button>
+        <% } %>
       </form>
     </main>
       <!-- Bootstrap JS -->

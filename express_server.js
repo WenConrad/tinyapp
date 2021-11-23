@@ -30,7 +30,8 @@ app.get("/urls", (req, res) => {
   let templateVars = checkCookie(req.session.user_id);
   templateVars.urls = userDatabase(req.session.user_id);
   if (!req.session.user_id) {
-    templateVars.notice = "Please Log in to view your TinyApp URLs."
+    templateVars.notice = "Please Log in to view your TinyApp URLs.";
+    templateVars.page = 'login';
     return res.render("login_register", templateVars);
   }
   res.render("urls_index", templateVars);
@@ -39,7 +40,8 @@ app.get("/urls", (req, res) => {
 app.get("/urls/new", (req, res) => {
   let templateVars = checkCookie(req.session.user_id);
   if (!req.session.user_id) {
-    templateVars.notice = "Please Log in to create a new TinyApp URL."
+    templateVars.notice = "Please Log in to create a new TinyApp URL.";
+    templateVars.page = 'login';
     return res.render("login_register", templateVars);
   }
   return res.render("urls_new", templateVars);
@@ -49,10 +51,11 @@ app.get("/urls/:shortURL", (req, res) => {
   let templateVars = checkCookie(req.session.user_id);
   templateVars.urls = userDatabase(req.session.user_id);
   if (!req.session.user_id) {
-    templateVars.notice = "Please Log in to view your TinyApp URLs."
+    templateVars.notice = "Please Log in to view your TinyApp URLs.";
+    templateVars.page = 'login';
     return res.render("login_register", templateVars);
   } else if (urlDatabase[req.params.shortURL].userID !== req.session.user_id) {
-    templateVars.notice = "URL not available."
+    templateVars.notice = "URL not available.";
     return res.render("urls_index", templateVars);
   }
   templateVars.shortURL = req.params.shortURL;
@@ -72,7 +75,8 @@ app.get("/u/:shortURL", (req, res) => {
 app.post("/urls", (req, res) => {
   let templateVars = checkCookie(req.session.user_id);
   if (!req.session.user_id) {
-    templateVars.notice = "Please log in to begin creating new TinyApp URLs."
+    templateVars.notice = "Please log in to begin creating new TinyApp URLs.";
+    templateVars.page = 'login';
     return res.render("login_register", templateVars);
   }
   let shortURL = hashString(req.body.longURL); //should we check if longURL is a valid URL? maybe implement this later
@@ -88,11 +92,12 @@ app.post("/urls/:shortURL/edit", (req, res) => {
   let templateVars = checkCookie(req.session.user_id);
   templateVars.urls = userDatabase(req.session.user_id);
   if (!req.session.user_id) {
-    templateVars.notice = "Please log in to view and edit your TinyApp URLs."
+    templateVars.notice = "Please log in to view and edit your TinyApp URLs.";
+    templateVars.page = 'login';
     return res.render("login_register", templateVars);
   }
   if (urlDatabase[req.params.shortURL].userID !== req.session.user_id) {
-    templateVars.notice = "Error: You can only edit your own TinyApp URLs."
+    templateVars.notice = "Error: You can only edit your own TinyApp URLs.";
     return res.render("urls_index", templateVars);
   }
   delete urlDatabase[req.params.shortURL];
@@ -109,11 +114,12 @@ app.post("/urls/:shortURL/delete", (req, res) => {
   let templateVars = checkCookie(req.session.user_id);
   templateVars.urls = userDatabase(req.session.user_id);
   if (!req.session.user_id) {
-    templateVars.notice = "Please log in to view and edit your TinyApp URLs."
+    templateVars.notice = "Please log in to view and edit your TinyApp URLs.";
+    templateVars.page = 'login';
     return res.render("login_register", templateVars);
   }
   if (urlDatabase[req.params.shortURL].userID !== req.session.user_id) {
-    templateVars.notice = "Error: You can only edit your own TinyApp URLs."
+    templateVars.notice = "Error: You can only edit your own TinyApp URLs.";
     return res.render("urls_index", templateVars);
   }
   delete urlDatabase[req.params.shortURL];
@@ -126,6 +132,7 @@ app.get("/login", (req, res) => {
   if (req.session.user_id) {
     return res.redirect("/urls");
   }
+  templateVars.page = 'login';
   res.render("login_register", templateVars);
 })
 
@@ -134,6 +141,7 @@ app.get("/register", (req, res) => {
   if (req.session.user_id) {
     return res.redirect("/urls");
   }
+  templateVars.page = 'register';
   res.render("login_register", templateVars);
 })
 
@@ -148,6 +156,7 @@ app.post("/login", (req, res) => {
   if (credentials.userExists) {
     templateVars.notice = "Login Failed: Password Incorrect"
   }
+  templateVars.page = 'login';
   return res.render("login_register", templateVars)
 });
 
@@ -155,7 +164,8 @@ app.post("/register", (req, res) => {
   let templateVars = checkCookie(req.session.user_id);
   credentials = checkUserAndPass(req);
   if (credentials.userExists) {
-    templateVars.notice = `${req.body.email} is already registered.`
+    templateVars.notice = `${req.body.email} is already registered.`;
+    templateVars.page = 'register';
     return res.render("login_register", templateVars)
   }
   users[credentials.userID] = {
