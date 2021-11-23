@@ -17,7 +17,7 @@ const checkCookie = (cookie) => {
 
 const userDatabase = (userID) => {
   let databaseUser = {};
-  for (let i in urlDatabase) {
+  for (const i in urlDatabase) {
     if (urlDatabase[i].userID === userID) {
       databaseUser[i] = urlDatabase[i];
     }
