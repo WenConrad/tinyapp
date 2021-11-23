@@ -11,7 +11,8 @@
       </div>
     </div>
     <% if (session == null) { %>
-      <a href="/register" class="btn btn-outline-dark">Login / Register</a>
+      <a href="/login" class="btn btn-outline-dark" style="margin-inline:0.5em">Login</a>
+      <a href="/register" class="btn btn-outline-dark">Register</a>
     <% } else { %>
     <form class="form-inline" action="/logout" method="POST">
       <div class="form-group">

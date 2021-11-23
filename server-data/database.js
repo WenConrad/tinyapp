@@ -1,8 +1,8 @@
 const urlDatabase = {
   v69tDP: { fullURL: 'https://www.lighthouselabs.ca', userID: 'twTy6d' },
-  i4xyhU: { fullURL: 'https://www.google.com', userID: 'twTy6d' },
   bwMOQu: { fullURL: 'https://www.youtube.com', userID: 'twTy6d' },
-  lXeXUs: { fullURL: 'https://www.wikipedia.org', userID: 'CF9rwZ' }
+  lXeXUs: { fullURL: 'https://www.wikipedia.org', userID: 'CF9rwZ' },
+  UwW40j: { fullURL: 'http://www.google.com', userID: 'twTy6d' }
 };
 const users = {
   twTy6d: {
@@ -19,6 +19,11 @@ const users = {
     userID: 'sbLEFk',
     email: 'conradwen@hotmail.com',
     password: '$2a$10$/vzdV/3gknalE742cgOQSuzoqsReYl5ap8qIFAdFbbDKCUoqyEafG'
+  },
+  '000000': {
+    userID: '000000',
+    email: '',
+    password: '$2a$10$NHgCYeZwRVAVo2.n5LmX3.hiYiyLjriUgMGLDf4EqeMhDbRTNwbYK'
   }
 };
 module.exports = { urlDatabase, users };

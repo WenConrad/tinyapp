@@ -121,6 +121,14 @@ app.post("/urls/:shortURL/delete", (req, res) => {
   res.redirect("/urls");
 });
 
+app.get("/login", (req, res) => {
+  let templateVars = checkCookie(req.session.user_id);
+  if (req.session.user_id) {
+    return res.redirect("/urls");
+  }
+  res.render("login_register", templateVars);
+})
+
 app.get("/register", (req, res) => {
   let templateVars = checkCookie(req.session.user_id);
   if (req.session.user_id) {
