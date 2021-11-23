@@ -6,9 +6,9 @@ const urlDatabase = {
 };
 const users = {
   twTy6d: {
-    id: 'twTy6d',
+    userID: 'twTy6d',
     email: 'conradwen@gmail.com',
-    password: '$2a$10$1bNySHwNwvFhJSN64v0kveXsAdf.IgwAOrdlhsY8.igV./HVdc.im'
+    password: '$2a$10$ECcWqzvg6Kp.do6wEF//oeoX3Sd5Ix6BnChalJ8e7slt2kJBbxtKS'
   },
   CF9rwZ: {
     userID: 'CF9rwZ',
@@ -18,12 +18,7 @@ const users = {
   sbLEFk: {
     userID: 'sbLEFk',
     email: 'conradwen@hotmail.com',
-    password: '$2a$10$/vzdV/3gknalE742cgOQSuzoqsReYl5ap8qIFAdFbbDKCUoqyEafG'
-  },
-  '000000': {
-    userID: '000000',
-    email: '',
-    password: '$2a$10$NHgCYeZwRVAVo2.n5LmX3.hiYiyLjriUgMGLDf4EqeMhDbRTNwbYK'
+    password: '$2a$10$fqz5hBYFnimBJ6emmgj93Oz0nZD3n7hNTUUArM9tfBcSEBUeMJ.9W'
   }
 };
 module.exports = { urlDatabase, users };

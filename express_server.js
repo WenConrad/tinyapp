@@ -156,6 +156,9 @@ app.post("/login", (req, res) => {
   if (credentials.userExists) {
     templateVars.notice = "Login Failed: Password Incorrect";
   }
+  if (req.body.email === "" || req.body.password === "") {
+    templateVars.notice = `Email and Password forms cannot be empty.`;
+  }
   templateVars.page = 'login';
   return res.render("login_register", templateVars);
 });
@@ -163,6 +166,11 @@ app.post("/login", (req, res) => {
 app.post("/register", (req, res) => {
   let templateVars = checkCookie(req.session.userID);
   let credentials = checkUserAndPass(req);
+  if (req.body.email === "" || req.body.password === "") {
+    templateVars.notice = `Email and Password forms cannot be empty.`;
+    templateVars.page = 'register';
+    return res.render("login_register", templateVars);
+  }
   if (credentials.userExists) {
     templateVars.notice = `${req.body.email} is already registered.`;
     templateVars.page = 'register';
