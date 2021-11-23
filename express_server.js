@@ -27,11 +27,11 @@ app.get("/", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
-  let templateVars = checkCookie(req.session.userID);
-  templateVars.urls = userURLs(req.session.userID);
-  if (!req.session.userID) {
-    templateVars.notice = "Please Log in to view your TinyApp URLs.";
-    templateVars.page = 'login';
+  let templateVars = checkCookie(req.session.userID); //checks for cookies and assigns session to be passed back into the response
+  templateVars.urls = userURLs(req.session.userID); //gets URLs owned by user to be passed into the response later
+  if (!req.session.userID) { //if no user, redirect to login page with alert banner displayed
+    templateVars.notice = "Please Log in to view your TinyApp URLs."; //templatevars.notice is used by the ejs file to render the alert message
+    templateVars.page = 'login'; //the same template file is used by both login and register pages, passing this variable to let ejs know what to render.
     return res.render("login_register", templateVars);
   }
   res.render("urls_index", templateVars);
@@ -50,14 +50,14 @@ app.get("/urls/new", (req, res) => {
 app.get("/urls/:shortURL", (req, res) => {
   let templateVars = checkCookie(req.session.userID);
   templateVars.urls = userURLs(req.session.userID);
-  if (!urlDatabase[req.params.shortURL]) {
+  if (!urlDatabase[req.params.shortURL]) { //if shortURL doesn't exist, send error message
     res.status(404);
     return res.send("Error 404: shortURL does not exist.");
-  } else if (!req.session.userID) {
+  } else if (!req.session.userID) { //if not logged in, redirect to login with alert asking to log in
     templateVars.notice = "Please Log in to view your TinyApp URLs.";
     templateVars.page = 'login';
     return res.render("login_register", templateVars);
-  } else if (urlDatabase[req.params.shortURL].userID !== req.session.userID) {
+  } else if (urlDatabase[req.params.shortURL].userID !== req.session.userID) { //if shortURL doesn't belong to user, redirect to shortURLs page with alert
     templateVars.notice = "URL not available.";
     return res.render("urls_index", templateVars);
   }
@@ -151,15 +151,15 @@ app.get("/register", (req, res) => {
 app.post("/login", (req, res) => {
   let templateVars = checkCookie(req.session.userID);
   let credentials = checkUserAndPass(req);
-  if (credentials.passMatch) {
+  if (credentials.passMatch) { //if password and user both match
     req.session.userID = credentials.userID;
     return res.redirect("/urls");
   }
-  templateVars.notice = `${req.body.email} is not a registered user.`;
-  if (credentials.userExists) {
+  templateVars.notice = `${req.body.email} is not a registered user.`; //default case user doesnt exist
+  if (credentials.userExists) { //if user exists then password was wrong, overwrite the above default case notice
     templateVars.notice = "Login Failed: Password Incorrect";
   }
-  if (req.body.email === "" || req.body.password === "") {
+  if (req.body.email === "" || req.body.password === "") { //return relevant alert message if either field was empty
     templateVars.notice = `Email and Password forms cannot be empty.`;
   }
   templateVars.page = 'login';
