@@ -45,4 +45,4 @@ const saveToDataBase = () => {
   });
 };
 
-module.exports = { checkCookie, userDatabase, checkUserAndPass, saveToDataBase };
+module.exports = { checkCookie, userURLs, checkUserAndPass, saveToDataBase };
